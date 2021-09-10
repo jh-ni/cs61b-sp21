@@ -3,17 +3,20 @@
 ```java
  public class Zeno {
     public static void main(String[] args) {
-        int col = 0;
         int row = 1;
         int SIZE = 5;
         while (row <= SIZE) {
+          int col = 0;
            while (col < row) { 
               System.out.print('*');
               col = col + 1;             
            }
             System.out.println();
-            col = 0;
             row = row + 1; 
+        }    
+    }
+}
+
         }    
     }
 }
@@ -22,17 +25,16 @@
 ```java
 public class TriangleDrawer {
    public static void drawTriangle(int N) {
-      int col = 0;
       int row = 1;
       int size = N;
       while (row <= size){
+         int col = 0;
          while (col < row){
             System.out.print('*');
             col = col + 1;
          }
          row = row + 1;
          System.out.println();
-         col = 0;
       }
    }
    public static void main(String[] args) {
