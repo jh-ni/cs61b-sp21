@@ -113,69 +113,10 @@ public class Model extends Observable {
         // TODO: Modify this.board (and perhaps this.score) to account
         // for the tilt to the Side SIDE. If the board changed, set the
         // changed local variable to true.
-        for (int i = 0; i < board.size(); i += 1){
-            for (int j = 0; j < board.size()-1; j += 1){
-                if (board.tile(i,j) != null){
-                    //board.move(i,3,tile(i,j)); 有问题 第三行上可能也有东西
-                    changed = true;
-                   // if (board.tile(i,j) == board.tile(i,j+k))
-                    score +=
-                }
-            }
+        for (int col = 0; col <= 3; col += 1){
+            moveforward(col);
+            changed = true;
         }
-        //判断第2行动不动
-        public Boolean twotomove(Tile){
-            boolean ifmoved = false;
-            for (int i = 0; i < board.size(); i += 1){
-                while (board.tile(i,2) != null){
-                if (board.tile(i,3) == null){
-                    board.move(i,2,tile(i,3));
-                    ifmoved = true;
-                }else if ((board.tile(i,2)).value() == (board.tile(i,3)).value()){
-                    board.move(i,2,tile(i,3));
-                    score += (tile(i,3)).value();
-                    ifmoved = true;
-                }else{
-                    continue;
-                }
-                }
-            }
-            return ifmoved;
-        }//怎么判断第一排去哪里
-        public Tile onetomove(Tile){
-            for (int i = 0; i < board.size(); i += 1){
-                if (twotomove){
-                    if ()
-                    board.move(i,1,tile(i,2))
-                }
-
-                }else{
-
-                }
-            }
-    }
-}
-
-        //判断要不要相加
-        public boolean ifadd(Tile){
-        for (int i = 0; i < board.size(); i += 1){
-            if (board.tile(i,2) != null){
-               ((board.tile(i,2)).value() == (board.tile(i,3)).value()){
-                board.move(i,2,tile(i,3));
-                }
-            }
-        }
-
-        //判断向上移到哪一格
-        public Tile moveto(Tile){
-        for (int i = 0; i < board.size(); i += 1){
-            for (int j = 0; j < board.size()-1; j += 1){
-            if (ifadd(tile(i,j))){
-                board.move(i,)
-            }
-        }
-
-
 
         checkGameOver();
         if (changed) {
@@ -183,6 +124,44 @@ public class Model extends Observable {
         }
         return changed;
     }
+// 一列当中是否可以有合并，合并去哪里
+        public void merge(int col){
+            for (int i = 3; i >= 1; i -= 1) {
+                if (board.tile(col, i) != null) {
+                    for (int j = i - 1; j >= 0; j -= 1) {
+                        if (board.tile(col, j) != null) {
+                            if ((board.tile(col, i).value() == (board.tile(col, j).value()))) {
+                                //好像没考虑一个格子只能移动一次的事情
+                                
+                                board.move(col, j, tile(col, i));
+                                score += (board.tile(col,i)).value();
+                                if (i == 3 && j == 2) {
+                                    merge(col);
+                                } else {
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        //整体前移的方法
+        public void moveforward(int col){
+            merge(col);
+            for (int i = 3; i >= 0; i -= 1) {
+                if (tile(col, i) == null) {
+                    for (int j = i - 1; j >= 0; j -= 1) {
+                        if (tile(col, j) != null) {
+                            board.move(col, j, tile(col, i));
+                        }
+                    }
+                }
+            }
+
+        }
+
+
 
     /** Checks if the game is over and sets the gameOver variable
      *  appropriately.
