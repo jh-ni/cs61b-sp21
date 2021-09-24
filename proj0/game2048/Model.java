@@ -123,12 +123,44 @@ public class Model extends Observable {
                 }
             }
         }
+        //判断第2行动不动
+        public Boolean twotomove(Tile){
+            boolean ifmoved = false;
+            for (int i = 0; i < board.size(); i += 1){
+                while (board.tile(i,2) != null){
+                if (board.tile(i,3) == null){
+                    board.move(i,2,tile(i,3));
+                    ifmoved = true;
+                }else if ((board.tile(i,2)).value() == (board.tile(i,3)).value()){
+                    board.move(i,2,tile(i,3));
+                    score += (tile(i,3)).value();
+                    ifmoved = true;
+                }else{
+                    continue;
+                }
+                }
+            }
+            return ifmoved;
+        }//怎么判断第一排去哪里
+        public Tile onetomove(Tile){
+            for (int i = 0; i < board.size(); i += 1){
+                if (twotomove){
+                    if ()
+                    board.move(i,1,tile(i,2))
+                }
+
+                }else{
+
+                }
+            }
+    }
+}
 
         //判断要不要相加
         public boolean ifadd(Tile){
         for (int i = 0; i < board.size(); i += 1){
             if (board.tile(i,2) != null){
-               (board.tile(i,2) == board.tile(i,3)){
+               ((board.tile(i,2)).value() == (board.tile(i,3)).value()){
                 board.move(i,2,tile(i,3));
                 }
             }
