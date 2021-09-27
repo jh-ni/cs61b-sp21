@@ -8,13 +8,21 @@ import java.util.Observable;
  *  @author TODO: Jh_Ni
  */
 public class Model extends Observable {
-    /** Current contents of the board. */
+    /**
+     * Current contents of the board.
+     */
     private Board board;
-    /** Current score. */
+    /**
+     * Current score.
+     */
     private int score;
-    /** Maximum score so far.  Updated when game ends. */
+    /**
+     * Maximum score so far.  Updated when game ends.
+     */
     private int maxScore;
-    /** True iff game is ended. */
+    /**
+     * True iff game is ended.
+     */
     private boolean gameOver;
 
     /* Coordinate System: column C, row R of the board (where row 0,
@@ -22,20 +30,26 @@ public class Model extends Observable {
      * to board.tile(c, r).  Be careful! It works like (x, y) coordinates.
      */
 
-    /** Largest piece value. */
+    /**
+     * Largest piece value.
+     */
     public static final int MAX_PIECE = 2048;
 
-    /** A new 2048 game on a board of size SIZE with no pieces
-     *  and score 0. */
+    /**
+     * A new 2048 game on a board of size SIZE with no pieces
+     * and score 0.
+     */
     public Model(int size) {
         board = new Board(size);
         score = maxScore = 0;
         gameOver = false;
     }
 
-    /** A new 2048 game where RAWVALUES contain the values of the tiles
+    /**
+     * A new 2048 game where RAWVALUES contain the values of the tiles
      * (0 if null). VALUES is indexed by (row, col) with (0, 0) corresponding
-     * to the bottom-left corner. Used for testing purposes. */
+     * to the bottom-left corner. Used for testing purposes.
+     */
     public Model(int[][] rawValues, int score, int maxScore, boolean gameOver) {
         int size = rawValues.length;
         board = new Board(rawValues, score);
@@ -44,22 +58,27 @@ public class Model extends Observable {
         this.gameOver = gameOver;
     }
 
-    /** Return the current Tile at (COL, ROW), where 0 <= ROW < size(),
-     *  0 <= COL < size(). Returns null if there is no tile there.
-     *  Used for testing. Should be deprecated and removed.
-     *  */
+    /**
+     * Return the current Tile at (COL, ROW), where 0 <= ROW < size(),
+     * 0 <= COL < size(). Returns null if there is no tile there.
+     * Used for testing. Should be deprecated and removed.
+     */
     public Tile tile(int col, int row) {
         return board.tile(col, row);
     }
 
-    /** Return the number of squares on one side of the board.
-     *  Used for testing. Should be deprecated and removed. */
+    /**
+     * Return the number of squares on one side of the board.
+     * Used for testing. Should be deprecated and removed.
+     */
     public int size() {
         return board.size();
     }
 
-    /** Return true iff the game is over (there are no moves, or
-     *  there is a tile with value 2048 on the board). */
+    /**
+     * Return true iff the game is over (there are no moves, or
+     * there is a tile with value 2048 on the board).
+     */
     public boolean gameOver() {
         checkGameOver();
         if (gameOver) {
@@ -68,17 +87,23 @@ public class Model extends Observable {
         return gameOver;
     }
 
-    /** Return the current score. */
+    /**
+     * Return the current score.
+     */
     public int score() {
         return score;
     }
 
-    /** Return the current maximum game score (updated at end of game). */
+    /**
+     * Return the current maximum game score (updated at end of game).
+     */
     public int maxScore() {
         return maxScore;
     }
 
-    /** Clear the board to empty and reset the score. */
+    /**
+     * Clear the board to empty and reset the score.
+     */
     public void clear() {
         score = 0;
         gameOver = false;
@@ -86,26 +111,29 @@ public class Model extends Observable {
         setChanged();
     }
 
-    /** Add TILE to the board. There must be no Tile currently at the
-     *  same position. */
+    /**
+     * Add TILE to the board. There must be no Tile currently at the
+     * same position.
+     */
     public void addTile(Tile tile) {
         board.addTile(tile);
         checkGameOver();
         setChanged();
     }
 
-    /** Tilt the board toward SIDE. Return true iff this changes the board.
-     *
+    /**
+     * Tilt the board toward SIDE. Return true iff this changes the board.
+     * <p>
      * 1. If two Tile objects are adjacent in the direction of motion and have
-     *    the same value, they are merged into one Tile of twice the original
-     *    value and that new value is added to the score instance variable
+     * the same value, they are merged into one Tile of twice the original
+     * value and that new value is added to the score instance variable
      * 2. A tile that is the result of a merge will not merge again on that
-     *    tilt. So each move, every tile will only ever be part of at most one
-     *    merge (perhaps zero).
+     * tilt. So each move, every tile will only ever be part of at most one
+     * merge (perhaps zero).
      * 3. When three adjacent tiles in the direction of motion have the same
-     *    value, then the leading two tiles in the direction of motion merge,
-     *    and the trailing tile does not.
-     * */
+     * value, then the leading two tiles in the direction of motion merge,
+     * and the trailing tile does not.
+     */
     public boolean tilt(Side side) {
         boolean changed;
         changed = false;
@@ -113,8 +141,9 @@ public class Model extends Observable {
         // TODO: Modify this.board (and perhaps this.score) to account
         // for the tilt to the Side SIDE. If the board changed, set the
         // changed local variable to true.
-        for (int col = 0; col <= 3; col += 1){
-            moveforward(col);
+        for (int col = 0; col <= 3; col += 1) {
+            merge(col);
+            move_forward(col);
             changed = true;
         }
 
@@ -124,42 +153,71 @@ public class Model extends Observable {
         }
         return changed;
     }
-// 一列当中是否可以有合并，合并去哪里
-        public void merge(int col){
-            for (int i = 3; i >= 1; i -= 1) {
-                if (board.tile(col, i) != null) {
-                    for (int j = i - 1; j >= 0; j -= 1) {
-                        if (board.tile(col, j) != null) {
-                            if ((board.tile(col, i).value() == (board.tile(col, j).value()))) {
-                                //好像没考虑一个格子只能移动一次的事情
-                                
-                                board.move(col, j, tile(col, i));
-                                score += (board.tile(col,i)).value();
-                                if (i == 3 && j == 2) {
-                                    merge(col);
-                                } else {
+
+    // 一列当中是否可以有合并，合并去哪里
+    public void merge(int col) {
+        for (int i = 3; i >= 1; i -= 1) {
+            if (board.tile(col, i) != null) {
+                for (int j = i - 1; j >= 0; j -= 1) {
+                    if (board.tile(col, j) != null) {
+                        if ((board.tile(col, i)).value() == (board.tile(col, j)).value()) {
+                            score += 2 * (board.tile(col, i)).value();
+                            //考虑一下一个格子只能移动一次的事情
+                            if (i == 3) {
+                                board.move(col, j, board.tile(col, i));
+                                if (j == 2) {
                                     break;
                                 }
+                            } else if (i == 2) {
+                                if (tile(col, 3) == null) {
+                                    board.move(col, i, board.tile(col, 3));
+                                    board.move(col, j, board.tile(col, 3));
+                                } else {
+                                    board.move(col, j, board.tile(col, i));
+                                }
+                            } else {   //i=1
+                                if (board.tile(col, 3) == null && board.tile(col, 2) == null) {
+                                    board.move(col, i, board.tile(col, 3));
+                                    board.move(col, j, board.tile(col, 3));
+                                } else if (board.tile(col, 3) == null && board.tile(col, 2) != null) {
+                                    board.move(col, 2, board.tile(col, 3));
+                                    board.move(col, i, board.tile(col, 2));
+                                    board.move(col, j, board.tile(col, 2));
+                                } else if (board.tile(col, 3) != null && board.tile(col, 2) == null) {
+                                    board.move(col, i, board.tile(col, 2));
+                                    board.move(col, j, board.tile(col, 2));
+                                } else {      //both != null
+                                    board.move(col, j, board.tile(col, i));
+                                }
                             }
+                        } else {
+                            break;
                         }
+                    } else {
+                        continue;
                     }
                 }
             }
         }
-        //整体前移的方法
-        public void moveforward(int col){
-            merge(col);
-            for (int i = 3; i >= 0; i -= 1) {
-                if (tile(col, i) == null) {
-                    for (int j = i - 1; j >= 0; j -= 1) {
-                        if (tile(col, j) != null) {
-                            board.move(col, j, tile(col, i));
-                        }
-                    }
-                }
-            }
+    }
 
+    //整体前移的方法
+    public void move_forward(int col) {
+        for (int i = 3; i >= 0; i -= 1) {
+            if (tile(col, i) == null) {
+                for (int j = i - 1; j >= 0; j -= 1) {
+                    if (tile(col, j) != null) {
+                        board.move(col, j, board.tile(col, i));  //这个地方要上面的格子是null不能这样移动
+                    }else{
+                        continue;
+                    }
+                }
+            }
         }
+
+    }
+
+
 
 
 
