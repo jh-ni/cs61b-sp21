@@ -155,6 +155,9 @@ public class Model extends Observable {
     }
 
     // 一列当中是否可以有合并，合并去哪里
+    //震惊 ''To know when you should update the score, note that the board.move(c, r, t) method returns true
+    // if moving the tile t to column c and row r would replace an existing tile
+    // (i.e. you have a merge operation).''  之前没发现这个555  把t跟 c,r位置搞反了
     public void merge(int col) {
         for (int i = 3; i >= 1; i -= 1) {
             if (board.tile(col, i) != null) {
@@ -164,30 +167,30 @@ public class Model extends Observable {
                             score += 2 * (board.tile(col, i)).value();
                             //考虑一下一个格子只能移动一次的事情
                             if (i == 3) {
-                                board.move(col, j, board.tile(col, i));
+                                board.move(col, i, board.tile(col, j));
                                 if (j == 2) {
                                     break;
                                 }
                             } else if (i == 2) {
                                 if (tile(col, 3) == null) {
-                                    board.move(col, i, board.tile(col, 3));
-                                    board.move(col, j, board.tile(col, 3));
+                                    board.move(col, 3, board.tile(col, i));
+                                    board.move(col, 3, board.tile(col, j));
                                 } else {
-                                    board.move(col, j, board.tile(col, i));
+                                    board.move(col, i, board.tile(col, j));
                                 }
                             } else {   //i=1
                                 if (board.tile(col, 3) == null && board.tile(col, 2) == null) {
-                                    board.move(col, i, board.tile(col, 3));
-                                    board.move(col, j, board.tile(col, 3));
+                                    board.move(col, 3, board.tile(col, i));
+                                    board.move(col, 3, board.tile(col, j));
                                 } else if (board.tile(col, 3) == null && board.tile(col, 2) != null) {
-                                    board.move(col, 2, board.tile(col, 3));
-                                    board.move(col, i, board.tile(col, 2));
-                                    board.move(col, j, board.tile(col, 2));
+                                    board.move(col, 3, board.tile(col, 2));
+                                    board.move(col, 2, board.tile(col, i));
+                                    board.move(col, 2, board.tile(col, j));
                                 } else if (board.tile(col, 3) != null && board.tile(col, 2) == null) {
-                                    board.move(col, i, board.tile(col, 2));
-                                    board.move(col, j, board.tile(col, 2));
+                                    board.move(col, 2, board.tile(col, i));
+                                    board.move(col, 2, board.tile(col, j));
                                 } else {      //both != null
-                                    board.move(col, j, board.tile(col, i));
+                                    board.move(col, i, board.tile(col, j));
                                 }
                             }
                         } else {
@@ -207,7 +210,7 @@ public class Model extends Observable {
             if (tile(col, i) == null) {
                 for (int j = i - 1; j >= 0; j -= 1) {
                     if (tile(col, j) != null) {
-                        board.move(col, j, board.tile(col, i));  //这个地方要上面的格子是null不能这样移动
+                        board.move(col, i, board.tile(col, j));  //这个地方要上面的格子是null不能这样移动
                     }else{
                         continue;
                     }
