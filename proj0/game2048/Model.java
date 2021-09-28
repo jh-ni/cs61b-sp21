@@ -134,10 +134,12 @@ public class Model extends Observable {
      * value, then the leading two tiles in the direction of motion merge,
      * and the trailing tile does not.
      */
+
+
     public boolean tilt(Side side) {
         boolean changed;
         changed = false;
-
+       board.setViewingPerspective(side);
         // TODO: Modify this.board (and perhaps this.score) to account
         // for the tilt to the Side SIDE. If the board changed, set the
         // changed local variable to true.
@@ -146,7 +148,7 @@ public class Model extends Observable {
             move_forward(col);
             changed = true;
         }
-
+        board.setViewingPerspective(Side.NORTH);
         checkGameOver();
         if (changed) {
             setChanged();
